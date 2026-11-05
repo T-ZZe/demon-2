@@ -1,0 +1,592 @@
+# ============================================================================
+#  DemonPact - configuration (Paper 26.3)
+#  Codes couleur : &  | Sons : clés Minecraft (ex: entity.wither.spawn)
+#  Particules : clés Minecraft sans donnée (ex: flame, portal, end_rod)
+#  Dialogues des démons : voir dialogues.yml
+# ============================================================================
+prefix: "&4&l[&c&lDemonPact&4&l] &7"
+
+# --- Négociation -------------------------------------------------------------
+negotiation:
+  time-seconds: 300          # temps pour accepter / refuser (5 minutes)
+  on-refuse: DESPAWN         # DESPAWN : le démon disparaît | NEXT_PLAYER : il se tourne vers un autre joueur
+  on-timeout: NEXT_PLAYER    # idem, en cas de non-réponse
+  open-gui-delay-ticks: 40   # délai avant l'ouverture automatique de l'interface
+  chat-radius: 60            # portée des paroles du démon (le joueur ciblé les reçoit toujours)
+  announce-global: true      # annonce de l'apparition à tout le serveur
+
+# --- Demon Stell (autel) -------------------------------------------------------
+# Position : définie par /demon setstell (écrite ici automatiquement), modifiable à la main.
+stell:
+  world: ""
+  x: 0
+  y: 0
+  z: 0
+  build-on-set: true         # construit la plateforme / les runes lors de /demon setstell
+  temple-length: 30          # demi-longueur du colossal temple (16 à 48) ; demi-largeur = 75 % ; dôme, tambour, tours et parvis s'adaptent
+  column-height: 20          # hauteur des colonnes (8 à 32)
+  clear-height: 8            # hauteur minimale dégagée (le plugin dégage toute la hauteur du temple)
+  deposit-radius: 2.5        # rayon autour du centre où les offrandes jetées sont absorbées
+  protect: true              # interdit casser/poser sur l'autel sans demon.admin
+  target-radius: 40          # rayon (blocs) dans lequel le démon choisit un joueur (0 = tout le monde)
+  animation-ticks: 100       # durée de l'animation d'invocation (20 ticks = 1 seconde)
+  lightning-during-summon: true   # éclairs visuels (sans dégâts) pendant l'invocation
+  idle-animation: true       # animation d'attente quand aucun démon n'est présent
+  idle-view-distance: 64     # animation visible seulement si un joueur est à moins de X blocs
+
+# --- Pactes ---------------------------------------------------------------------
+pact:
+  max-active: 1              # nombre de pactes simultanés par joueur
+  allow-abandon: true        # /demon abandon
+  refund-on-abandon: true    # rend les cœurs sacrifiés quand on abandonne le pacte
+
+# --- Sacrifices -------------------------------------------------------------------
+sacrifice:
+  heart-health: 2.0          # points de vie par cœur (1 cœur = 2.0)
+  min-max-health: 6.0        # vie maximale minimale après sacrifices (6.0 = 3 cœurs)
+
+heads:
+  drop-chance: 0.33          # chance (33 %) qu'un joueur laisse sa tête en mourant
+  drop-cooldown-seconds: 250 # une fois sa tête tombée, elle ne peut pas retomber avant ce délai
+  pvp-only: false            # true : la tête ne tombe que si le joueur est tué par un autre joueur
+  require-plugin-tag: false  # true : seules les têtes lâchées par ce plugin sont acceptées
+  allow-own-head: false      # interdit de sacrifier sa propre tête
+
+items:
+  keep-on-death: true        # l'objet de pacte est conservé à la mort de son propriétaire
+  allow-reclaim: true        # /demon item : réémet l'objet (l'ancien devient inerte)
+  reclaim-cooldown-seconds: 60
+
+# --- Vol de cœur en tuant un joueur -------------------------------------------------
+steal:
+  enabled: true
+  chance: 0.15               # 15 % de chance, quand vous tuez un joueur, qu'il perde 1 cœur et que vous le gagniez
+  cooldown-seconds: 480      # délai avant un nouveau vol (par tueur)
+  hearts: 1                  # cœurs volés
+  max-bonus-hearts: 10       # maximum de cœurs gagnés par vol cumulés
+
+# --- Déguisement : clic droit avec une tête de joueur --------------------------------
+disguise:
+  enabled: true
+  duration-seconds: 5400     # 1h30
+  require-offline: true      # on ne peut prendre que l'identité d'un joueur déconnecté
+  # fin : mort, /undeguise (ou /undisguise, /demon undisguise), reconnexion du joueur imité, fin du délai
+
+# --- Apparition automatique d'un démon sur la stell -----------------------------------
+auto-spawn:
+  enabled: true
+  interval-minutes: 120      # toutes les 2 h
+  wait-minutes: 10           # temps d'attente avant que le démon parte si personne ne lui parle
+  min-players: 1             # joueurs connectés minimum
+  # le premier joueur qui fait un clic droit sur le démon reçoit la proposition de pacte
+
+# --- Réglages des pouvoirs -------------------------------------------------------
+powers-settings:
+  anti-spam-ms: 500          # délai minimal entre deux utilisations de pouvoir
+  affect-players: true       # les pouvoirs affectent les autres joueurs
+  max-frozen: 40             # entités maximum figées par Arrêt du Temps
+  max-servants: 8            # serviteurs maximum par joueur (NOX)
+  # --- Puissance globale des pouvoirs (appliquée à toutes les valeurs ci-dessous) ---
+  attribute-multiplier: 1.0  # multiplie tous les montants d'attributs des pouvoirs passifs
+  damage-multiplier: 2.0     # dégâts x2
+  range-multiplier: 1.4      # portées x1.4
+  duration-multiplier: 1.5   # durées x1.5 (pouvoirs, bonus et malus)
+  strength-multiplier: 1.3   # force x1.3 (+1 niveau pour les pouvoirs à niveau d'effet ; +2 serviteurs/clones)
+  cooldown-multiplier: 0.8   # recharges -20 %
+  buff-amplifier-bonus: 1    # niveau d'effet en plus pour les bonus du lanceur (max niveau V)
+  debuff-amplifier-bonus: 1  # niveau d'effet en plus pour les malus infligés
+  passive-multiplier: 1.5    # bonus passifs x1.5 (esquive, vol de vie, dégâts, foudre...)
+  passive-amplifier-bonus: 1 # niveau en plus pour les effets permanents (max niveau IV)
+  wall-material: STONE_BRICKS
+
+# --- Zones où les pouvoirs sont désactivés ----------------------------------------
+disabled-zones:
+  worlds: []                 # ex: ["world_spawn"]
+  cuboids: []                # ex: ["world:0,0,0:100,255,100"]
+  worldguard-regions: []     # noms de régions WorldGuard (si WorldGuard est installé)
+
+# --- Pouvoirs ----------------------------------------------------------------------
+# cooldown / duration en secondes, range en blocs. strength et damage dépendent du pouvoir.
+# buffs : effets reçus par le lanceur à chaque utilisation. debuffs : effets infligés aux ennemis touchés.
+# Format d'un effet : {effect: speed, seconds: 3, amplifier: 1}  (clé d'effet Minecraft, amplifier 0 = niveau I)
+# Les clés name / description sont facultatives. enabled: false désactive un pouvoir.
+# attributes : pouvoirs PASSIFS qui modifient les attributs du joueur tant que le pacte existe.
+#   (amount ; operation : ADD_NUMBER = valeur ajoutée, ADD_SCALAR = pourcentage, 0.5 = +50 %). Supprimés à l'abandon du pacte.
+# Aucune évolution : ces valeurs ne changent jamais en jeu.
+powers:
+  AIR_DASH: {cooldown: 8, duration: 0, range: 2.5, strength: 2.4, damage: 2, particle: cloud, sound: entity.phantom.flap, enabled: true, buffs: [{effect: speed, seconds: 3, amplifier: 1}], debuffs: []}
+  AIR_JUMP: {cooldown: 0, duration: 0, range: 0, strength: 0, damage: 0, particle: cloud, sound: entity.phantom.flap, enabled: true, attributes: [{attribute: jump_strength, amount: 0.5, operation: ADD_SCALAR}, {attribute: safe_fall_distance, amount: 8, operation: ADD_NUMBER}, {attribute: movement_speed, amount: 0.12, operation: ADD_SCALAR}]}
+  TORNADO: {cooldown: 25, duration: 3, range: 6, strength: 1.6, damage: 4, particle: cloud, sound: entity.breeze.wind_burst, enabled: true, buffs: [], debuffs: [{effect: nausea, seconds: 4, amplifier: 0}, {effect: slowness, seconds: 2, amplifier: 1}]}
+  FIRE_DASH: {cooldown: 10, duration: 4, range: 2.5, strength: 2, damage: 4, particle: flame, sound: entity.blaze.shoot, enabled: true, buffs: [{effect: strength, seconds: 4, amplifier: 0}], debuffs: []}
+  FLAME_BURST: {cooldown: 20, duration: 5, range: 6, strength: 1.3, damage: 6, particle: flame, sound: entity.blaze.shoot, enabled: true, buffs: [{effect: strength, seconds: 6, amplifier: 0}], debuffs: [{effect: blindness, seconds: 2, amplifier: 0}]}
+  FIRE_RESISTANCE: {cooldown: 0, duration: 0, range: 0, strength: 0, damage: 0, particle: flame, sound: item.firecharge.use, enabled: true, attributes: [{attribute: attack_damage, amount: 3, operation: ADD_NUMBER}, {attribute: burning_time, amount: -0.9, operation: ADD_NUMBER}, {attribute: explosion_knockback_resistance, amount: 0.5, operation: ADD_NUMBER}]}
+  LIGHTNING_STRIKE: {cooldown: 15, duration: 0, range: 30, strength: 0, damage: 9, particle: electric_spark, sound: entity.lightning_bolt.thunder, enabled: true, buffs: [], debuffs: [{effect: weakness, seconds: 4, amplifier: 0}, {effect: glowing, seconds: 6, amplifier: 0}]}
+  ELECTRIC_DASH: {cooldown: 0, duration: 0, range: 0, strength: 0, damage: 0, particle: electric_spark, sound: entity.lightning_bolt.impact, enabled: true, attributes: [{attribute: attack_speed, amount: 0.5, operation: ADD_SCALAR}, {attribute: movement_speed, amount: 0.1, operation: ADD_SCALAR}, {attribute: step_height, amount: 0.5, operation: ADD_NUMBER}]}
+  ELECTRIC_FIELD: {cooldown: 40, duration: 8, range: 5, strength: 0, damage: 2, particle: electric_spark, sound: block.beacon.activate, enabled: true, buffs: [{effect: haste, seconds: 8, amplifier: 1}], debuffs: [{effect: weakness, seconds: 2, amplifier: 0}]}
+  TIME_STOP: {cooldown: 60, duration: 4, range: 6, strength: 0, damage: 0, particle: end_rod, sound: block.bell.use, enabled: true, buffs: [{effect: speed, seconds: 4, amplifier: 2}, {effect: strength, seconds: 4, amplifier: 1}], debuffs: []}
+  SLOW_ENEMIES: {cooldown: 25, duration: 8, range: 8, strength: 3, damage: 0, particle: end_rod, sound: block.bell.use, enabled: true, buffs: [], debuffs: [{effect: weakness, seconds: 6, amplifier: 0}]}
+  HASTE_SELF: {cooldown: 0, duration: 0, range: 0, strength: 0, damage: 0, particle: end_rod, sound: block.beacon.power_select, enabled: true, attributes: [{attribute: attack_speed, amount: 0.4, operation: ADD_SCALAR}, {attribute: movement_speed, amount: 0.15, operation: ADD_SCALAR}, {attribute: block_break_speed, amount: 0.5, operation: ADD_SCALAR}]}
+  INVISIBILITY: {cooldown: 0, duration: 0, range: 0, strength: 0, damage: 0, particle: squid_ink, sound: entity.enderman.teleport, enabled: true, attributes: [{attribute: sneaking_speed, amount: 0.5, operation: ADD_NUMBER}, {attribute: movement_speed, amount: 0.1, operation: ADD_SCALAR}, {attribute: step_height, amount: 0.4, operation: ADD_NUMBER}]}
+  SHORT_TELEPORT: {cooldown: 8, duration: 0, range: 8, strength: 0, damage: 0, particle: squid_ink, sound: entity.enderman.teleport, enabled: true, buffs: [{effect: speed, seconds: 3, amplifier: 1}], debuffs: []}
+  DARK_ZONE: {cooldown: 45, duration: 8, range: 6, strength: 0, damage: 0, particle: squid_ink, sound: entity.warden.sonic_charge, enabled: true, buffs: [{effect: night_vision, seconds: 8, amplifier: 0}], debuffs: [{effect: weakness, seconds: 4, amplifier: 0}]}
+  LIFESTEAL: {cooldown: 40, duration: 10, range: 0, strength: 0.4, damage: 0, particle: crimson_spore, sound: entity.witch.celebrate, enabled: true, buffs: [{effect: strength, seconds: 10, amplifier: 0}], debuffs: []}
+  SHOCKWAVE: {cooldown: 18, duration: 0, range: 5, strength: 1.2, damage: 5, particle: damage_indicator, sound: entity.warden.sonic_boom, enabled: true, buffs: [{effect: absorption, seconds: 6, amplifier: 0}], debuffs: []}
+  REGEN: {cooldown: 0, duration: 0, range: 0, strength: 0, damage: 0, particle: heart, sound: entity.generic.drink, enabled: true, attributes: [{attribute: max_health, amount: 6, operation: ADD_NUMBER}, {attribute: attack_damage, amount: 2, operation: ADD_NUMBER}]}
+  SEISMIC_WAVE: {cooldown: 15, duration: 0, range: 12, strength: 0.8, damage: 5, particle: poof, sound: block.stone.break, enabled: true, buffs: [], debuffs: [{effect: slowness, seconds: 3, amplifier: 1}, {effect: weakness, seconds: 3, amplifier: 0}]}
+  STONE_WALL: {cooldown: 25, duration: 10, range: 5, strength: 0, damage: 0, particle: poof, sound: block.stone.place, enabled: true, buffs: [{effect: resistance, seconds: 6, amplifier: 0}], debuffs: []}
+  DAMAGE_RESIST: {cooldown: 0, duration: 0, range: 0, strength: 0, damage: 0, particle: poof, sound: block.stone.place, enabled: true, attributes: [{attribute: armor, amount: 6, operation: ADD_NUMBER}, {attribute: armor_toughness, amount: 4, operation: ADD_NUMBER}, {attribute: knockback_resistance, amount: 0.6, operation: ADD_NUMBER}]}
+  WATER_PRISON: {cooldown: 35, duration: 5, range: 20, strength: 0, damage: 1, particle: bubble_pop, sound: entity.player.splash.high_speed, enabled: true, buffs: [], debuffs: [{effect: weakness, seconds: 5, amplifier: 1}]}
+  WAVE: {cooldown: 20, duration: 0, range: 10, strength: 1.8, damage: 3, particle: splash, sound: entity.player.splash.high_speed, enabled: true, buffs: [{effect: dolphins_grace, seconds: 6, amplifier: 0}], debuffs: [{effect: slowness, seconds: 3, amplifier: 0}]}
+  WATER_BREATHING: {cooldown: 0, duration: 0, range: 0, strength: 0, damage: 0, particle: bubble_pop, sound: block.bubble_column.upwards_ambient, enabled: true, attributes: [{attribute: oxygen_bonus, amount: 20, operation: ADD_NUMBER}, {attribute: water_movement_efficiency, amount: 1.0, operation: ADD_NUMBER}, {attribute: submerged_mining_speed, amount: 3.0, operation: ADD_SCALAR}]}
+  SUMMON_SERVANTS: {cooldown: 60, duration: 30, range: 20, strength: 3, damage: 0, particle: soul, sound: entity.evoker.prepare_summon, enabled: true, buffs: [{effect: resistance, seconds: 10, amplifier: 0}], debuffs: []}
+  FEAR_AURA: {cooldown: 0, duration: 0, range: 0, strength: 0, damage: 0, particle: soul, sound: entity.ghast.scream, enabled: true, attributes: [{attribute: attack_damage, amount: 3, operation: ADD_NUMBER}, {attribute: max_health, amount: 4, operation: ADD_NUMBER}, {attribute: knockback_resistance, amount: 0.3, operation: ADD_NUMBER}]}
+  CURSE: {cooldown: 40, duration: 10, range: 25, strength: 0, damage: 0, particle: soul, sound: entity.wither.hurt, enabled: true, buffs: [], debuffs: [{effect: mining_fatigue, seconds: 10, amplifier: 0}]}
+  CLONES: {cooldown: 30, duration: 12, range: 0, strength: 3, damage: 0, particle: witch, sound: entity.illusioner.cast_spell, enabled: true, buffs: [{effect: invisibility, seconds: 2, amplifier: 0}, {effect: speed, seconds: 6, amplifier: 2}], debuffs: []}
+  TELEPORT: {cooldown: 15, duration: 6, range: 14, strength: 0, damage: 0, particle: witch, sound: entity.illusioner.mirror_move, enabled: true, buffs: [{effect: speed, seconds: 4, amplifier: 1}], debuffs: []}
+  CONFUSION: {cooldown: 0, duration: 0, range: 0, strength: 0, damage: 0, particle: witch, sound: entity.illusioner.cast_spell, enabled: true, attributes: [{attribute: movement_speed, amount: 0.2, operation: ADD_SCALAR}, {attribute: step_height, amount: 1.0, operation: ADD_NUMBER}, {attribute: scale, amount: -0.2, operation: ADD_SCALAR}, {attribute: fall_damage_multiplier, amount: -0.5, operation: ADD_NUMBER}]}
+  LEVITATE_ZONE: {cooldown: 0, duration: 0, range: 0, strength: 0, damage: 0, particle: reverse_portal, sound: block.beacon.power_select, enabled: true, attributes: [{attribute: attack_damage, amount: 2, operation: ADD_NUMBER}, {attribute: armor, amount: 4, operation: ADD_NUMBER}, {attribute: knockback_resistance, amount: 0.5, operation: ADD_NUMBER}]}
+  GRAVITY_CRUSH: {cooldown: 25, duration: 0, range: 7, strength: 2, damage: 6, particle: crit, sound: block.anvil.land, enabled: true, buffs: [{effect: resistance, seconds: 4, amplifier: 1}], debuffs: []}
+  LOW_GRAVITY: {cooldown: 0, duration: 0, range: 0, strength: 0, damage: 0, particle: reverse_portal, sound: block.beacon.power_select, enabled: true, attributes: [{attribute: gravity, amount: -0.04, operation: ADD_NUMBER}, {attribute: jump_strength, amount: 0.3, operation: ADD_NUMBER}, {attribute: safe_fall_distance, amount: 20, operation: ADD_NUMBER}, {attribute: fall_damage_multiplier, amount: -0.5, operation: ADD_NUMBER}]}
+  RIFT: {cooldown: 40, duration: 6, range: 7, strength: 0.35, damage: 2, particle: portal, sound: block.portal.ambient, enabled: true, buffs: [], debuffs: [{effect: glowing, seconds: 6, amplifier: 0}, {effect: weakness, seconds: 3, amplifier: 0}]}
+  VOID_PROJECTILE: {cooldown: 12, duration: 0, range: 40, strength: 1.6, damage: 8, particle: portal, sound: entity.enderman.scream, enabled: true, buffs: [], debuffs: [{effect: wither, seconds: 3, amplifier: 0}]}
+  VOID_TELEPORT: {cooldown: 25, duration: 0, range: 40, strength: 0, damage: 0, particle: portal, sound: entity.enderman.teleport, enabled: true, buffs: [{effect: invisibility, seconds: 2, amplifier: 0}, {effect: speed, seconds: 3, amplifier: 1}], debuffs: []}
+
+# --- Les 12 démons ----------------------------------------------------------------
+# Chaque contrat : un pouvoir contre un ou plusieurs sacrifices.
+# Types de sacrifice : HEARTS (cœurs permanents), HEADS (têtes de joueurs), ITEMS (material + amount).
+# entity : type d'entité de l'apparence du démon ; element : WIND FIRE LIGHTNING TIME SHADOW BLOOD EARTH WATER DEATH ILLUSION GRAVITY VOID
+demons:
+  AERON:
+    name: "AERON"
+    title: "Démon du Vent"
+    color: "&b"
+    glow-color: aqua
+    rarity: RARE
+    power-level: 5
+    element: WIND
+    entity: vex
+    scale: 1.8
+    hover: true
+    # bonus passifs : actifs tant que l'objet du pacte est dans l'inventaire
+    passive:
+      effects: [{effect: speed, amplifier: 0}, {effect: jump_boost, amplifier: 0}]
+      dodge-chance: 0.05
+    item:
+      material: FEATHER
+      name: "&b&lPlume du Vent"
+      lore:
+        - "&7Une plume qui ne retombe jamais."
+    contracts:
+      air_dash:
+        power: AIR_DASH
+        costs: [{type: HEARTS, amount: 2}]
+        side-effects:
+          - "&7Vous perdez 2 cœurs permanents."
+      tornado:
+        power: TORNADO
+        costs: [{type: HEADS, amount: 3}]
+        side-effects:
+          - "&7Trois têtes de joueurs sont consumées."
+      air_jump:
+        power: AIR_JUMP
+        costs: [{type: HEARTS, amount: 1}]
+        side-effects:
+          - "&7Vous perdez 1 cœur permanent."
+  IGNIS:
+    name: "IGNIS"
+    title: "Démon du Feu"
+    color: "&c"
+    glow-color: red
+    rarity: RARE
+    power-level: 6
+    element: FIRE
+    entity: blaze
+    scale: 1.4
+    hover: true
+    # bonus passifs : actifs tant que l'objet du pacte est dans l'inventaire
+    passive:
+      effects: [{effect: fire_resistance, amplifier: 0}]
+      ignite-seconds: 4
+      bonus-damage: 0.05
+    item:
+      material: BLAZE_POWDER
+      name: "&c&lCœur des Flammes"
+      lore:
+        - "&7Il bat comme un brasier."
+    contracts:
+      fire_dash:
+        power: FIRE_DASH
+        costs: [{type: HEARTS, amount: 2}]
+        side-effects:
+          - "&7Les flammes consument votre vitalité."
+      flame_burst:
+        power: FLAME_BURST
+        costs: [{type: HEARTS, amount: 3}]
+        side-effects:
+          - "&7Un sacrifice lourd pour une explosion."
+      fire_resistance:
+        power: FIRE_RESISTANCE
+        costs: [{type: HEARTS, amount: 1}]
+        side-effects:
+          - "&7Le feu ne vous brûlera plus."
+  VOLTAR:
+    name: "VOLTAR"
+    title: "Démon de la Foudre"
+    color: "&e"
+    glow-color: yellow
+    rarity: EPIC
+    power-level: 7
+    element: LIGHTNING
+    entity: breeze
+    scale: 1.5
+    hover: true
+    # bonus passifs : actifs tant que l'objet du pacte est dans l'inventaire
+    passive:
+      effects: [{effect: haste, amplifier: 0}]
+      lightning-chance: 0.12
+    item:
+      material: AMETHYST_SHARD
+      name: "&e&lCristal de Foudre"
+      lore:
+        - "&7Il crépite à votre contact."
+    contracts:
+      lightning_strike:
+        power: LIGHTNING_STRIKE
+        costs: [{type: HEADS, amount: 3}]
+        side-effects:
+          - "&7Vous devez ramener des têtes authentiques."
+      electric_dash:
+        power: ELECTRIC_DASH
+        costs: [{type: HEADS, amount: 2}]
+        side-effects:
+          - "&7Deux têtes de joueurs."
+      electric_field:
+        power: ELECTRIC_FIELD
+        costs: [{type: HEADS, amount: 4}]
+        side-effects:
+          - "&7Quatre têtes de joueurs."
+  CHRONOS:
+    name: "CHRONOS"
+    title: "Démon du Temps"
+    color: "&6"
+    glow-color: gold
+    rarity: LEGENDARY
+    power-level: 9
+    element: TIME
+    entity: evoker
+    helmet: GOLDEN_HELMET
+    scale: 1.3
+    hover: false
+    # bonus passifs : actifs tant que l'objet du pacte est dans l'inventaire
+    passive:
+      effects: [{effect: speed, amplifier: 0}, {effect: haste, amplifier: 0}]
+    item:
+      material: CLOCK
+      name: "&6&lMontre du Temps"
+      lore:
+        - "&7Son tic-tac n'est pas celui du monde."
+    contracts:
+      time_stop:
+        power: TIME_STOP
+        costs: [{type: HEARTS, amount: 4}]
+        side-effects:
+          - "&7Quatre cœurs sacrifiés pour arrêter le temps."
+      slow_enemies:
+        power: SLOW_ENEMIES
+        costs: [{type: HEARTS, amount: 2}]
+        side-effects:
+          - "&7Deux cœurs permanents."
+      haste_self:
+        power: HASTE_SELF
+        costs: [{type: HEARTS, amount: 1}]
+        side-effects:
+          - "&7Un cœur permanent."
+  UMBRA:
+    name: "UMBRA"
+    title: "Démon des Ombres"
+    color: "&8"
+    glow-color: dark_gray
+    rarity: EPIC
+    power-level: 7
+    element: SHADOW
+    entity: enderman
+    scale: 1.2
+    hover: false
+    # bonus passifs : actifs tant que l'objet du pacte est dans l'inventaire
+    passive:
+      effects: [{effect: night_vision, amplifier: 0}]
+      dodge-chance: 0.10
+    item:
+      material: ECHO_SHARD
+      name: "&8&lFragment des Ombres"
+      lore:
+        - "&7Il absorbe la lumière."
+    contracts:
+      invisibility:
+        power: INVISIBILITY
+        costs: [{type: HEADS, amount: 2}]
+        side-effects:
+          - "&7Deux têtes de joueurs."
+      short_teleport:
+        power: SHORT_TELEPORT
+        costs: [{type: HEADS, amount: 1}]
+        side-effects:
+          - "&7Une seule tête suffit."
+      dark_zone:
+        power: DARK_ZONE
+        costs: [{type: HEADS, amount: 3}]
+        side-effects:
+          - "&7Trois têtes de joueurs."
+  SANGUIS:
+    name: "SANGUIS"
+    title: "Démon du Sang"
+    color: "&4"
+    glow-color: dark_red
+    rarity: EPIC
+    power-level: 7
+    element: BLOOD
+    entity: vindicator
+    helmet: LEATHER_HELMET
+    scale: 1.3
+    hover: false
+    # bonus passifs : actifs tant que l'objet du pacte est dans l'inventaire
+    passive:
+      effects: []
+      lifesteal: 0.12
+      bonus-damage: 0.05
+    item:
+      material: FERMENTED_SPIDER_EYE
+      name: "&4&lCœur Sanguinaire"
+      lore:
+        - "&7Il palpite encore."
+    contracts:
+      lifesteal:
+        power: LIFESTEAL
+        costs: [{type: HEARTS, amount: 3}]
+        side-effects:
+          - "&7Votre sang nourrit le pacte."
+      shockwave:
+        power: SHOCKWAVE
+        costs: [{type: HEARTS, amount: 2}]
+        side-effects:
+          - "&7Deux cœurs permanents."
+      regen:
+        power: REGEN
+        costs: [{type: HEARTS, amount: 1}]
+        side-effects:
+          - "&7Un cœur permanent."
+  TERRAX:
+    name: "TERRAX"
+    title: "Démon de la Terre"
+    color: "&2"
+    glow-color: dark_green
+    rarity: RARE
+    power-level: 6
+    element: EARTH
+    entity: iron_golem
+    scale: 1.6
+    hover: false
+    # bonus passifs : actifs tant que l'objet du pacte est dans l'inventaire
+    passive:
+      effects: [{effect: resistance, amplifier: 0}]
+    item:
+      material: CLAY_BALL
+      name: "&2&lNoyau Terrestre"
+      lore:
+        - "&7Lourd comme une montagne."
+    contracts:
+      seismic_wave:
+        power: SEISMIC_WAVE
+        costs: [{type: ITEMS, material: DIAMOND, amount: 16}]
+        side-effects:
+          - "&7Seize diamants à offrir."
+      stone_wall:
+        power: STONE_WALL
+        costs: [{type: ITEMS, material: EMERALD, amount: 24}]
+        side-effects:
+          - "&7Vingt-quatre émeraudes."
+      damage_resist:
+        power: DAMAGE_RESIST
+        costs: [{type: ITEMS, material: NETHERITE_SCRAP, amount: 4}]
+        side-effects:
+          - "&7Quatre débris de netherite."
+  AQUARIS:
+    name: "AQUARIS"
+    title: "Démon des Abysses"
+    color: "&3"
+    glow-color: dark_aqua
+    rarity: EPIC
+    power-level: 7
+    element: WATER
+    entity: drowned
+    helmet: TURTLE_HELMET
+    scale: 1.4
+    hover: false
+    # bonus passifs : actifs tant que l'objet du pacte est dans l'inventaire
+    passive:
+      effects: [{effect: dolphins_grace, amplifier: 0}, {effect: conduit_power, amplifier: 0}]
+    item:
+      material: HEART_OF_THE_SEA
+      name: "&3&lPerle des Abysses"
+      lore:
+        - "&7On y entend l'océan."
+    contracts:
+      water_prison:
+        power: WATER_PRISON
+        costs: [{type: HEADS, amount: 3}]
+        side-effects:
+          - "&7Trois têtes de joueurs."
+      wave:
+        power: WAVE
+        costs: [{type: HEADS, amount: 2}]
+        side-effects:
+          - "&7Deux têtes de joueurs."
+      water_breathing:
+        power: WATER_BREATHING
+        costs: [{type: HEADS, amount: 1}]
+        side-effects:
+          - "&7Pouvoir passif : respiration aquatique permanente."
+  NOX:
+    name: "NOX"
+    title: "Démon de la Mort"
+    color: "&5"
+    glow-color: dark_purple
+    rarity: LEGENDARY
+    power-level: 9
+    element: DEATH
+    entity: wither_skeleton
+    scale: 1.5
+    hover: false
+    # bonus passifs : actifs tant que l'objet du pacte est dans l'inventaire
+    passive:
+      effects: [{effect: night_vision, amplifier: 0}]
+      on-hit: {effect: wither, seconds: 3, amplifier: 0, chance: 0.2}
+    item:
+      material: WITHER_SKELETON_SKULL
+      name: "&5&lCrâne de la Mort"
+      lore:
+        - "&7Il murmure des noms oubliés."
+    contracts:
+      summon_servants:
+        power: SUMMON_SERVANTS
+        costs: [{type: HEARTS, amount: 3}]
+        side-effects:
+          - "&7Trois cœurs permanents."
+      fear_aura:
+        power: FEAR_AURA
+        costs: [{type: HEARTS, amount: 2}]
+        side-effects:
+          - "&7Deux cœurs permanents."
+      curse:
+        power: CURSE
+        costs: [{type: HEARTS, amount: 2}]
+        side-effects:
+          - "&7Deux cœurs permanents."
+  PHANTOM:
+    name: "PHANTOM"
+    title: "Démon de l'Illusion"
+    color: "&d"
+    glow-color: light_purple
+    rarity: EPIC
+    power-level: 7
+    element: ILLUSION
+    entity: illusioner
+    scale: 1.2
+    hover: false
+    # bonus passifs : actifs tant que l'objet du pacte est dans l'inventaire
+    passive:
+      effects: [{effect: speed, amplifier: 0}]
+      dodge-chance: 0.12
+    item:
+      material: SPYGLASS
+      name: "&d&lMiroir Illusoire"
+      lore:
+        - "&7Votre reflet ne vous ressemble plus."
+    contracts:
+      clones:
+        power: CLONES
+        costs: [{type: ITEMS, material: TOTEM_OF_UNDYING, amount: 1}]
+        side-effects:
+          - "&7Un totem d'immortalité."
+      teleport:
+        power: TELEPORT
+        costs: [{type: ITEMS, material: ENDER_PEARL, amount: 16}]
+        side-effects:
+          - "&7Seize perles de l'Ender."
+      confusion:
+        power: CONFUSION
+        costs: [{type: ITEMS, material: ENCHANTED_GOLDEN_APPLE, amount: 1}]
+        side-effects:
+          - "&7Une pomme d'or enchantée."
+  GRAVITAS:
+    name: "GRAVITAS"
+    title: "Démon de la Gravité"
+    color: "&9"
+    glow-color: blue
+    rarity: LEGENDARY
+    power-level: 8
+    element: GRAVITY
+    entity: ravager
+    scale: 1.2
+    hover: false
+    # bonus passifs : actifs tant que l'objet du pacte est dans l'inventaire
+    passive:
+      effects: [{effect: jump_boost, amplifier: 1}, {effect: slow_falling, amplifier: 0}]
+    item:
+      material: NAUTILUS_SHELL
+      name: "&9&lOrbe Gravitationnel"
+      lore:
+        - "&7Il pèse plus qu'il n'y paraît."
+    contracts:
+      levitate_zone:
+        power: LEVITATE_ZONE
+        costs: [{type: HEARTS, amount: 2}]
+        side-effects:
+          - "&7Deux cœurs permanents."
+      gravity_crush:
+        power: GRAVITY_CRUSH
+        costs: [{type: HEARTS, amount: 3}]
+        side-effects:
+          - "&7Trois cœurs permanents."
+      low_gravity:
+        power: LOW_GRAVITY
+        costs: [{type: HEARTS, amount: 1}]
+        side-effects:
+          - "&7Un cœur permanent."
+  VOID:
+    name: "VOID"
+    title: "Démon du Néant"
+    color: "&5"
+    glow-color: black
+    rarity: MYTHIC
+    power-level: 10
+    element: VOID
+    entity: warden
+    scale: 1.0
+    hover: false
+    # bonus passifs : actifs tant que l'objet du pacte est dans l'inventaire
+    passive:
+      effects: [{effect: night_vision, amplifier: 0}]
+      dodge-chance: 0.08
+      bonus-damage: 0.08
+    item:
+      material: NETHER_STAR
+      name: "&5&lFragment du Néant"
+      lore:
+        - "&7Il n'y a rien dedans. C'est le problème."
+    contracts:
+      rift:
+        power: RIFT
+        costs: [{type: HEADS, amount: 2}, {type: HEARTS, amount: 1}]
+        side-effects:
+          - "&7Deux têtes et un cœur permanent."
+      void_projectile:
+        power: VOID_PROJECTILE
+        costs: [{type: HEADS, amount: 3}, {type: HEARTS, amount: 2}]
+        side-effects:
+          - "&7Trois têtes et deux cœurs permanents."
+      void_teleport:
+        power: VOID_TELEPORT
+        costs: [{type: HEADS, amount: 2}, {type: HEARTS, amount: 2}]
+        side-effects:
+          - "&7Deux têtes et deux cœurs permanents."
